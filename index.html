@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lazy Load Sprites</title>
+    <style>
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Container to hold all the images -->
+<div id="image-container"></div>
+
+<script>
+    const totalImages = 1694;  // Total number of images you have
+    const imageContainer = document.getElementById('image-container');
+
+    // Function to lazy load images as they come into view
+    function lazyLoadImages() {
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;  // Set the src attribute when the image is in view
+                    observer.unobserve(img);  // Stop observing this image once loaded
+                }
+            });
+        }, {
+            rootMargin: '100px',  // Start loading 100px before the image is in view
+            threshold: 0.1
+        });
+
+        for (let i = 1; i <= totalImages; i++) {
+            const img = document.createElement('img');
+            img.dataset.src = `./sprites/sprite_${i}.jpg`;  // Load from your sprites directory
+            img.alt = `sprite_${i}`;
+            img.loading = 'lazy';  // Lazy loading support for browsers with native lazy loading
+            imageContainer.appendChild(img);
+            observer.observe(img);  // Observe each image
+        }
+    }
+
+    // Initialize lazy loading
+    document.addEventListener('DOMContentLoaded', lazyLoadImages);
+</script>
+
+</body>
+</html>
